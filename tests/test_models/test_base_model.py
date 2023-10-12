@@ -7,8 +7,8 @@ from models.base_model import BaseModel
 class TestBaseModel(unittest.TestCase):
     def test_pycodestyle(self):
         """Test that the code conforms to pycodestyle"""
-        style = pycodestyle.StyleGuide(quite=True)
-        result = style.check_files(['base_model.py'])
+        style = pycodestyle.StyleGuide()
+        result = style.check_files(['models/base_model.py'])
         self.assertEqual(result.total_errors, 0, "Found code pycodestyle errors.")
         
     def test_docstring(self):
