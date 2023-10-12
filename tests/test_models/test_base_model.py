@@ -1,5 +1,6 @@
 from datetime import datetime
 import unittest
+import uuid
 import pycodestyle
 from models import base_model
 from models.base_model import BaseModel
@@ -22,6 +23,12 @@ class TestBaseModel(unittest.TestCase):
     def test_id(self):
         M = BaseModel()
         self.assertTrue(isinstance(M.id, str))
+
+        # Check if id is a valid UUID
+        try:
+            uuid.UUID(M.id, version=4)
+        except ValueError:
+            self.fail("id is not a valid UUID")
 
     def test_id_multiple(self):
         M1 = BaseModel()
@@ -113,6 +120,9 @@ class TestBaseModel(unittest.TestCase):
         self.assertLess(update1, update2)
         self.assertLess(update2, update3)
         self.assertLess(update1, update3)
+
+    def test_to_dict_method(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
