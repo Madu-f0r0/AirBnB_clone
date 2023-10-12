@@ -1,7 +1,7 @@
 from datetime import datetime
 import unittest
 import pycodestyle
-import base_model
+from models import base_model
 from models.base_model import BaseModel
 
 class TestBaseModel(unittest.TestCase):
