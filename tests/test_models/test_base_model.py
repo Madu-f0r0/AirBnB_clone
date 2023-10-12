@@ -1,5 +1,6 @@
 from datetime import datetime
 import unittest
+import uuid
 import pycodestyle
 from models import base_model
 from models.base_model import BaseModel
@@ -22,6 +23,12 @@ class TestBaseModel(unittest.TestCase):
     def test_id(self):
         M = BaseModel()
         self.assertTrue(isinstance(M.id, str))
+
+        # Check if id is a valid UUID
+        try:
+            uuid.UUID(M.id, version=4)
+        except ValueError:
+            self.fail("id is not a valid UUID")
 
     def test_id_multiple(self):
         M1 = BaseModel()
@@ -113,6 +120,41 @@ class TestBaseModel(unittest.TestCase):
         self.assertLess(update1, update2)
         self.assertLess(update2, update3)
         self.assertLess(update1, update3)
+
+    def test_to_dict_method(self):
+        M = BaseModel()
+
+        M_json = M.to_dict()
+        self.assertIsInstance(M_json, dict)
+        self.assertIsInstance(M_json['created_at'], str)
+        self.assertIsInstance(M_json['updated_at'], str)
+        self.assertEqual(M_json['__class__'], 'BaseModel')
+        self.assertEqual(M_json['id'], M.id)
+
+    def test_kwargs_empty(self):
+        M = BaseModel()
+
+        self.assertIsInstance(M.id, str)
+        self.assertIsInstance(M.created_at, datetime)
+        self.assertIsInstance(M.updated_at, datetime)
+
+    def test_kwargs_passed(self):
+        M = BaseModel()
+        M.name = "MY_First_Model"
+        M.my_number = 89
+
+        M_json = M.to_dict()
+
+        new_M = BaseModel(**M_json)
+
+        self.assertIsInstance(new_M.id, str)
+        self.assertIsInstance(new_M.created_at, datetime)
+        self.assertIsInstance(new_M.updated_at, datetime)
+        self.assertEqual(new_M.name, "MY_First_Model")
+        self.assertEqual(new_M.my_number, 98)
+        self.assertFalse(hasattr(new_M, '__class__'))
+
+
 
 if __name__ == '__main__':
     unittest.main()
