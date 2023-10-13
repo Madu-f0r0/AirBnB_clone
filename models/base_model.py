@@ -2,6 +2,7 @@
 """This module contains the definition of the class BaseModel"""
 
 from datetime import datetime
+from models import storage
 import json
 import uuid
 
@@ -23,13 +24,14 @@ class BaseModel:
         if kwargs and len(kwargs) > 0:
             for key in kwargs.keys():
                 if type(key) is str and key != "__class__":
-                    if key == "updated_at" or key ==  "created_at":
+                    if key == "updated_at" or key == "created_at":
                         kwargs[key] = datetime.fromisoformat(kwargs[key])
                     self.__dict__[key] = kwargs[key]
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            storage.new(self)
 
     def __str__(self):
         """Returns a formatted string representation of the calling
@@ -45,6 +47,8 @@ class BaseModel:
         """
 
         self.updated_at = datetime.now()
+        storage.new(self)
+        storage.save()
 
     def to_dict(self):
         """Returns a modified dict containing the attributes of the

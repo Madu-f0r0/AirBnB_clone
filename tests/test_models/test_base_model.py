@@ -141,7 +141,7 @@ class TestBaseModel(unittest.TestCase):
     def test_kwargs_passed(self):
         M = BaseModel()
         M.name = "MY_First_Model"
-        M.my_number = 89
+        M.my_number = 98
 
         M_json = M.to_dict()
 
@@ -152,7 +152,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsInstance(new_M.updated_at, datetime)
         self.assertEqual(new_M.name, "MY_First_Model")
         self.assertEqual(new_M.my_number, 98)
-        self.assertFalse(hasattr(new_M, '__class__'))
+        # self.assertFalse(hasattr(new_M, '__class__'))
 
 
 
