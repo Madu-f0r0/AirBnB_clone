@@ -37,29 +37,35 @@ class TestFileStorage(unittest.TestCase):
         """Tests that private attribute `__file_path` is of type str"""
         self.assertTrue(type(FileStorage.__dict__['_FileStorage__file_path']), str)
 
-    def test_all_returns_dict(self):
+    def test_object_private(self):
+        """Tests that `__object` is indeed a private attribute"""
+        with self.assertRaises(AttributeError):
+            print(FileStorage.__objects)
+            print(FileStorage._objects)
+            print(FileStorage.objects)
+
+    def test_object_type(self):
+        """Tests that private attribute `__object` is of type dict"""
+        self.assertTrue(type(FileStorage.__dict__['_FileStorage__objects']), dict)
+
+    def test_initially_empty_object(self):
+        """Tests that `__object` is initially empty before calling method
+        `reload()` on the FileStorage instance"""
+        file_storage = FileStorage()
+        self.assertTrue(len(file_storage.__dict__[_FileStorage__objects]), 0)
+
+    def test_method_all_returns_dict(self):
         """Tests that public instance method, all(), returns a dict"""
         file_storage = FileStorage()
         all_objects = file_storage.all()
 
         self.assertTrue(type(all_objects), dict)
 
-    def test_object_private(self):
-        """Tests that `__object` is indeed a private attribute"""
-        with self.assertRaises(AttributeError):
-            print(FileStorage.__object)
-            print(FileStorage._object)
-            print(FileStorage.object)
-
-    def test_object_type(self):
-        """Tests that private attribute `__object` is of type dict"""
-        self.assertTrue(type(FileStorage.__dict__['_FileStorage__object']), dict)
-
-    def test_initially_empty_object(self):
-        """Tests that `__object` is initially empty before calling method
-        `reload()` on the FileStorage instance"""
+    def test_method_all_return_value(self):
+        """Tests that the return value of `all()` is actually `__objects`"""
         file_storage = FileStorage()
-        self.assertTrue(len(file_storage.__dict__[_FileStorage__object]), 0)
+        all_objects = file_storage.all()
+        self.assertIs(file_storage.__dict__[_FileStorage__objects], all_objects)
 
     def test_new_adds_obj_dict(self):
         """Tests that public instance method, new(), adds a new object 
