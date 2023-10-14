@@ -1,5 +1,7 @@
 """Unit test for the class FileStorage"""
 
+import os
+import json
 import unittest
 import pycodestyle
 from models.engine.file_storage import FileStorage
@@ -67,12 +69,45 @@ class TestFileStorage(unittest.TestCase):
         all_objects = file_storage.all()
         self.assertIs(file_storage.__dict__[_FileStorage__objects], all_objects)
 
-    def test_new_adds_obj_dict(self):
+    def test_method_new_adds_obj_dict(self):
         """Tests that public instance method, new(), adds a new object 
-        to `__objects`
+        to `__objects`, and confirms the key/value format
         """
         bm = BaseModel()
-        bm_obj = bm.to_dict()
+        bm_key = f"{bm.__class__.__name__}.{bm.id}"
 
         file_storage = FileStorage()
-        file_storage.new(bm_obj)
+        objs_dict = file_storage.__dict__[_FileStorage__objects]
+        dict_len = len(objs_dict)
+
+        file_storage.new(bm)
+        last_added_obj = objs_dict.copy().popitem()
+
+        self.assertTrue(len(objs_dict) == dict_len + 1)
+        self.assertEqual(last_added_obj[0], bm_key)
+        self.assertEqual(last_added_obj[1], bm.to_dict())
+
+    def test_method_save_return(self):
+        """Tests that the public instance method `save()` sends the JSON
+        format of `__objects` to the file in the attribute `__file_path`"""
+        json_file = File_storage.__dict__[_FileStorage__file_path]
+        bm1 = BaseModel()
+        bm1_key = f"{bm1.__class__.__name__}.{bm1.id}"
+
+        bm2 = BaseModel()
+        bm2_key = f"{bm2.__class__.__name__}.{bm2.id}"
+
+        file_storage = FileStorage()
+        objs_dict = file_storage.__dict__[_FileStorage__objects]
+
+        file_storage.new(bm1)
+        file_storage.save()
+
+        with open(json_file, "r") as file:
+            objs = file.read()
+
+        self.assertTrue(type(objs), str)
+        self.assertEqual(objs, json.dumps(objs_dict))
+
+        file
+
