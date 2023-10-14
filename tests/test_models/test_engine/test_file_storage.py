@@ -4,8 +4,9 @@ import os
 import json
 import unittest
 import pycodestyle
-from models.engine.file_storage import FileStorage
+from models.engine import file_storage
 from models.base_model import BaseModel
+from models.engine.file_storage import FileStorage
 
 
 class TestFileStorage(unittest.TestCase):
@@ -15,18 +16,19 @@ class TestFileStorage(unittest.TestCase):
         """Test that class FileStorage code conforms to pycodestyle"""
         style = pycodestyle.StyleGuide()
         result = style.check_files(['models/engine/file_storage.py'])
-        self.assertEqual(result.total_errors, 0, "Found code pycodestyle errors.")
+        self.assertEqual(result.total_errors, 0,
+                         "Found code pycodestyle errors.")
 
     def test_docstrings(self):
         """Tests that module file_storage and all its classes and functions are
         are properly documented
         """
-        self.assertIsnotNone(file_storage.__doc__)
-        self.assertIsnotNone(file_storage.FileStorage.__doc__)
-        self.assertIsnotNone(file_storage.FileStorage.all.__doc__)
-        self.assertIsnotNone(file_storage.FileStorage.new.__doc__)
-        self.assertIsnotNone(file_storage.FileStorage.save.__doc__)
-        self.assertIsnotNone(file_storage.FileStorage.reload.__doc__)
+        self.assertIsNotNone(file_storage.__doc__)
+        self.assertIsNotNone(file_storage.FileStorage.__doc__)
+        self.assertIsNotNone(file_storage.FileStorage.all.__doc__)
+        self.assertIsNotNone(file_storage.FileStorage.new.__doc__)
+        self.assertIsNotNone(file_storage.FileStorage.save.__doc__)
+        self.assertIsNotNone(file_storage.FileStorage.reload.__doc__)
 
     def test_file_path_private(self):
         """Tests that `__file_path` is indeed a private attribute"""
@@ -37,7 +39,7 @@ class TestFileStorage(unittest.TestCase):
 
     def test_file_path_type(self):
         """Tests that private attribute `__file_path` is of type str"""
-        self.assertTrue(type(FileStorage.__dict__['_FileStorage__file_path']), str)
+        self.assertTrue(type(FileStorage._FileStorage__file_path), str)
 
     def test_object_private(self):
         """Tests that `__object` is indeed a private attribute"""
@@ -48,13 +50,13 @@ class TestFileStorage(unittest.TestCase):
 
     def test_object_type(self):
         """Tests that private attribute `__object` is of type dict"""
-        self.assertTrue(type(FileStorage.__dict__['_FileStorage__objects']), dict)
+        self.assertTrue(type(FileStorage._FileStorage__objects), dict)
 
     def test_initially_empty_object(self):
         """Tests that `__object` is initially empty before calling method
         `reload()` on the FileStorage instance"""
         file_storage = FileStorage()
-        self.assertTrue(len(file_storage.__dict__[_FileStorage__objects]), 0)
+        self.assertEqual(len(file_storage.all()), 0)
 
     def test_method_all_returns_dict(self):
         """Tests that public instance method, all(), returns a dict"""
@@ -67,30 +69,30 @@ class TestFileStorage(unittest.TestCase):
         """Tests that the return value of `all()` is actually `__objects`"""
         file_storage = FileStorage()
         all_objects = file_storage.all()
-        self.assertIs(file_storage.__dict__[_FileStorage__objects], all_objects)
+        self.assertIs(file_storage._FileStorage__objects, all_objects)
 
     def test_method_new_adds_obj_dict(self):
-        """Tests that public instance method, new(), adds a new object 
+        """Tests that public instance method, new(), adds a new object
         to `__objects`, and confirms the key/value format
         """
+        file_storage = FileStorage()
+        objs_dict = file_storage.all()
+        dict_len = len(objs_dict)
+
         bm = BaseModel()
         bm_key = f"{bm.__class__.__name__}.{bm.id}"
 
-        file_storage = FileStorage()
-        objs_dict = file_storage.__dict__[_FileStorage__objects]
-        dict_len = len(objs_dict)
-
-        file_storage.new(bm)
         last_added_obj = objs_dict.copy().popitem()
 
-        self.assertTrue(len(objs_dict) == dict_len + 1)
+        self.assertEqual(len(objs_dict), dict_len + 1)
         self.assertEqual(last_added_obj[0], bm_key)
         self.assertEqual(last_added_obj[1], bm.to_dict())
 
-    def test_method_save_return(self):
+    def test_method_save(self):
         """Tests that the public instance method `save()` sends the JSON
         format of `__objects` to the file in the attribute `__file_path`"""
-        json_file = File_storage.__dict__[_FileStorage__file_path]
+        json_file = FileStorage._FileStorage__file_path
+
         bm1 = BaseModel()
         bm1_key = f"{bm1.__class__.__name__}.{bm1.id}"
 
@@ -98,7 +100,7 @@ class TestFileStorage(unittest.TestCase):
         bm2_key = f"{bm2.__class__.__name__}.{bm2.id}"
 
         file_storage = FileStorage()
-        objs_dict = file_storage.__dict__[_FileStorage__objects]
+        objs_dict = file_storage._FileStorage__objects
 
         file_storage.new(bm1)
         file_storage.save()
@@ -108,6 +110,3 @@ class TestFileStorage(unittest.TestCase):
 
         self.assertTrue(type(objs), str)
         self.assertEqual(objs, json.dumps(objs_dict))
-
-        file
-
