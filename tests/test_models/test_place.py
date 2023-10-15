@@ -5,7 +5,7 @@ from models import place
 from models.place import Place
 
 
-class TestState(unittest.TestCase):
+class TestPlace(unittest.TestCase):
     """
     TestState class defines unit tests for Place class
     """
