@@ -5,7 +5,8 @@ from models import review
 from models.review import Review
 
 
-class TestState(unittest.TestCase):
+class TestReview(unittest.TestCase):
+    """TestState class defines unit tests for the Review class"""
     def test_pycodestyle(self):
         """Test that the code conforms to pycodestyle"""
         style = pycodestyle.StyleGuide()
