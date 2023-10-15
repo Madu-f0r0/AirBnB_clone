@@ -179,7 +179,8 @@ class HBNBCommand(cmd.Cmd):
         if len(t) == 2:
             if t[0] in self.valid_classes and t[1] in valid_methods.keys():
                 valid_methods[t[1]](t[0])
-        print(f"*** Unknown syntax: {line}")
+        else:
+            print(f"*** Unknown syntax: {line}")
 
 
 if __name__ == '__main__':
