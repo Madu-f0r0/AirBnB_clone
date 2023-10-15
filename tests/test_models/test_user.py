@@ -7,7 +7,8 @@ from models import user
 from models.user import User
 
 
-class TestState(unittest.TestCase):
+class TestUser(unittest.TestCase):
+    """TestState class defines unit tests for the User class"""
     def test_pycodestyle(self):
         """Test that the code conforms to pycodestyle"""
         style = pycodestyle.StyleGuide()
