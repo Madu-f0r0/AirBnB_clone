@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 This module contains a class for managing objects,
 and persisting them to a JSON file.
