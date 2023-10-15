@@ -2,8 +2,9 @@
 
 """This module contains the entry point of the command interpreter"""
 
+import sys
 import cmd
-from models import storage
+import models
 from models.user import User
 from models.city import City
 from models.state import State
@@ -21,22 +22,27 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, line):
         """Creates a new instance of class BaseModel, and saves it to a JSON
         file, and prints the id
+
+        Usage: create <class name>
         """
         args_for_create = line.split()
+
         if len(args_for_create) == 0:
             print("** class name missing **")
+        elif args_for_create[0] not in self.valid_classes:
+            print("** class doesn't exist **")
         else:
             class_name = args_for_create[0]
-            if class_name not in self.valid_classes:
-                print("** class doesn't exist **")
-            else:
-                new_instance = globals()[class_name]()
-                new_instance.save()
-                print(new_instance.id)
+            obj_class = globals()[class_name]
+            obj = obj_class()
+            obj.save()
+            print(obj.id)
 
     def do_show(self, line):
         """Prints the string representation of an instance based on the
         class name and id
+
+        Usage: show <class name> <id>
         """
         args_for_show = line.split()
 
@@ -51,14 +57,11 @@ class HBNBCommand(cmd.Cmd):
             uid = args_for_show[1]
             obj_key = f"{class_name}.{uid}"
 
-            if obj_key not in storage.all().keys():
+            if obj_key not in models.storage.all().keys():
                 print("** no instance found **")
             else:
-                attrs = storage.all().get(obj_key)
-
-                obj_class = globals()[class_name]
-                new_instance = obj_class(**attrs)
-                print(new_instance)
+                obj = models.storage.all().get(obj_key)
+                print(obj)
 
     def do_destroy(self, line):
         """Deletes an instance based on the class name and id.
@@ -79,12 +82,12 @@ class HBNBCommand(cmd.Cmd):
             uid = args_for_destroy[1]
             obj_key = f"{class_name}.{uid}"
 
-            if obj_key not in storage.all().keys():
+            if obj_key not in models.storage.all().keys():
                 print("** no instance found **")
             else:
-                stored_obj = storage.all()
-                stored_obj.pop(obj_key)
-                storage.save()
+                stored_objs = models.storage.all()
+                stored_objs.pop(obj_key)
+                models.storage.save()
 
     def do_all(self, line):
         """Prints all string representation of all instances based
@@ -94,31 +97,24 @@ class HBNBCommand(cmd.Cmd):
                all <class name>
         """
         args_for_all = line.split()
-        stored_objs = storage.all()
+        stored_objs = models.storage.all()
         print_all = []
 
-        if len(args_for_all) > 0 and args_for_all[0] not in self.valid_classes:
-            print("** class doesn't exist **")
+        if len(args_for_all) == 0:
+            for obj_key in stored_objs.keys():
+                obj = stored_objs.get(obj_key)
+                print_all.insert(0, obj.__str__())
+            print(print_all)
         else:
-            if len(args_for_all) == 0:
-                for obj in stored_objs.keys():
-                    obj_dict = stored_objs.get(obj)
-                    obj_class = globals()[obj_dict["__class__"]]
-                    new_instance = obj_class(**obj_dict)
-                    print_all.insert(0, new_instance.__str__())
-                print(print_all)
+            if args_for_all[0] not in self.valid_classes:
+                print("** class doesn't exist **")
             else:
-                if args_for_all[0] not in self.valid_classes:
-                    print("** class doesn't exist **")
-                else:
-                    class_name = args_for_all[0]
-                    obj_class = globals()[class_name]
-                    for obj in stored_objs.keys():
-                        if obj.startswith(class_name):
-                            obj_dict = stored_objs.get(obj)
-                            new_instance = obj_class(**obj_dict)
-                            print_all.insert(0, new_instance.__str__())
-                    print(print_all)
+                class_name = args_for_all[0]
+                for obj_key in stored_objs.keys():
+                    if obj_key.startswith(class_name):
+                        obj = stored_objs.get(obj_key)
+                        print_all.insert(0, obj.__str__())
+                print(print_all)
 
     def do_update(self, line):
         """Updates an attribute or adds a new attribute to an existing instance
@@ -127,7 +123,7 @@ class HBNBCommand(cmd.Cmd):
         Usage: update <class name> <id> <attribute name> <attribute value>
         """
         args_for_update = line.split()
-        stored_objs = storage.all()
+        stored_objs = models.storage.all()
 
         if len(args_for_update) == 0:
             print("** class name missing **")
@@ -149,17 +145,15 @@ class HBNBCommand(cmd.Cmd):
             else:
                 attr_name = args_for_update[2]
                 attr_value = args_for_update[3]
-                obj_dict = stored_objs.get(obj_key)
+                obj = stored_objs.get(obj_key)
 
-                if attr_name in obj_dict.keys():
-                    value_type = type(obj_dict.get(attr_name))
-                    obj_dict[attr_name] = value_type(attr_value)
+                if attr_name in obj.__dict__.keys():
+                    value_type = type(obj.__dict__.get(attr_name))
+                    obj.__dict__[attr_name] = value_type(attr_value)
                 else:
-                    obj_dict[attr_name] = attr_value
+                    obj.__dict__[attr_name] = attr_value
 
-                obj_class = globals()[class_name]
-                new_instance = obj_class(**obj_dict)
-                new_instance.save()
+                obj.save()
 
     def do_quit(self, line):
         """Exits the command interpreter"""
