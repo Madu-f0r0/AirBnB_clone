@@ -5,7 +5,7 @@ from models import city
 from models.city import City
 
 
-class TestState(unittest.TestCase):
+class TestCity(unittest.TestCase):
     """
     TestState class defines unit tests for City class
     """
