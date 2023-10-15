@@ -12,7 +12,7 @@ class TestState(unittest.TestCase):
     def test_pycodestyle(self):
         """Test that the code conforms to pycodestyle"""
         style = pycodestyle.StyleGuide()
-        result = style.check_files(['models/user.py'])
+        result = style.check_files(['models/city.py'])
         self.assertEqual(result.total_errors, 0, "pycodestyle error")
 
     def test_docstring(self):
