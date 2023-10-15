@@ -5,7 +5,7 @@ from models import amenity
 from models.amenity import Amenity
 
 
-class TestState(unittest.TestCase):
+class TestAmenity(unittest.TestCase):
     """
     TestState class defines unit tests for Amenity class
     """
