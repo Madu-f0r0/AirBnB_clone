@@ -18,6 +18,7 @@ Example:
 
 """
 import json
+from models.base_model import BaseModel
 
 
 class FileStorage:
@@ -52,7 +53,7 @@ class FileStorage:
         """
         key = f"{obj.__class__.__name__}.{obj.id}"
         dictionary = self.all()
-        dictionary[key] = obj.to_dict()
+        dictionary[key] = obj
 
     def save(self):
         """
@@ -61,8 +62,15 @@ class FileStorage:
         Returns:
             None
         """
+        objs_dicts = {}
+
+        for key in self.__objects.keys():
+            obj = self.__objects.get(key)
+
+            objs_dicts[key] = obj.to_dict()
+
         with open(self.__file_path, "w") as f:
-            json.dump(self.__objects, f)
+            json.dump(objs_dicts, f)
 
     def reload(self):
         """
@@ -75,6 +83,15 @@ class FileStorage:
         """
         try:
             with open(self.__file_path, "r") as f:
-                self.__objects = json.load(f)
+                objs_dicts = json.load(f)
+
+                for obj_dict in objs_dicts.values():
+                    class_name = obj_dict.get("__class__")
+                    obj_dict.pop("__class__")
+
+                    obj_class = globals()[class_name]
+                    obj = obj_class(**obj_dict)
+
+                    self.new(obj)
         except FileNotFoundError:
             pass
