@@ -168,6 +168,19 @@ class HBNBCommand(cmd.Cmd):
         line is entered"""
         pass
 
+    def default(self, line):
+        valid_methods = {
+            "show()": self.do_show,
+            "destroy()": self.do_destroy,
+            "all()": self.do_all,
+            "update()": self.do_update}
+
+        t = line.split(".")
+        if len(t) == 2:
+            if t[0] in self.valid_classes and t[1] in valid_methods.keys():
+                valid_methods[t[1]](t[0])
+        print(f"*** Unknown syntax: {line}")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
