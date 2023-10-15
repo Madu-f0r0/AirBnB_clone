@@ -25,12 +25,14 @@ class HBNBCommand(cmd.Cmd):
         args_for_create = line.split()
         if len(args_for_create) == 0:
             print("** class name missing **")
-        elif args_for_create[0] != "BaseModel":
-            print("** class doesn't exist **")
         else:
-            base_model = BaseModel()
-            base_model.save()
-            print(base_model.id)
+            class_name = args_for_create[0]
+            if class_name not in self.valid_classes:
+                print("** class doesn't exist **")
+            else:
+                new_instance = globals()[class_name]()
+                new_instance.save()
+                print(new_instance.id)
 
     def do_show(self, line):
         """Prints the string representation of an instance based on the
