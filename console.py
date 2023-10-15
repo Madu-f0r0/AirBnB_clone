@@ -165,5 +165,6 @@ class HBNBCommand(cmd.Cmd):
         line is entered"""
         pass
 
+
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
