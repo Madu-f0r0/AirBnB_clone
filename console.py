@@ -155,6 +155,27 @@ class HBNBCommand(cmd.Cmd):
 
                 obj.save()
 
+    def do_count(self, line):
+        """Counts the number of instances of a class.
+
+        Usage: count <class name>
+        """
+        args_for_count = line.split()
+
+        if len(args_for_count) == 0:
+            print("** class name missing **")
+        elif args_for_count[0] not in self.valid_classes:
+            print("** class doesn't exist **")
+        else:
+            stored_objs = models.storage.all()
+            class_name = args_for_count[0]
+            obj_count = 0
+
+            for key in stored_objs.keys():
+                if key.startswith(class_name):
+                    obj_count += 1
+            print(obj_count)
+
     def do_quit(self, line):
         """Exits the command interpreter"""
         return True
@@ -173,7 +194,8 @@ class HBNBCommand(cmd.Cmd):
             "show()": self.do_show,
             "destroy()": self.do_destroy,
             "all()": self.do_all,
-            "update()": self.do_update}
+            "update()": self.do_update,
+            "count()": self.do_count}
 
         t = line.split(".")
         if len(t) == 2:
