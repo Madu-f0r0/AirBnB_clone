@@ -4,9 +4,16 @@ import os
 import json
 import unittest
 import pycodestyle
-from models.engine import file_storage
+from models.amenity import Amenity
 from models.base_model import BaseModel
+from models.city import City
+from models.engine import file_storage
 from models.engine.file_storage import FileStorage
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models import storage
+from models.user import User
 
 
 class TestFileStorage(unittest.TestCase):
@@ -76,37 +83,30 @@ class TestFileStorage(unittest.TestCase):
         to `__objects`, and confirms the key/value format
         """
         file_storage = FileStorage()
-        objs_dict = file_storage.all()
-        dict_len = len(objs_dict)
+        objs = file_storage.all()
+        objs_len = len(objs)
 
         bm = BaseModel()
         bm_key = f"{bm.__class__.__name__}.{bm.id}"
 
-        last_added_obj = objs_dict.copy().popitem()
+        last_added_obj = objs.copy().popitem()
 
-        self.assertEqual(len(objs_dict), dict_len + 1)
+        self.assertEqual(len(objs), objs_len + 1)
         self.assertEqual(last_added_obj[0], bm_key)
-        # self.assertEqual(last_added_obj[1], bm.to_dict())
+        self.assertEqual(last_added_obj[1], bm)
 
     def test_method_save(self):
         """Tests that the public instance method `save()` sends the JSON
         format of `__objects` to the file in the attribute `__file_path`"""
-        json_file = FileStorage._FileStorage__file_path
+        objs = storage.all().copy()
+        bm = BaseModel()
+        
+        updt_objs = storage.all().copy()
 
-        bm1 = BaseModel()
-        bm1_key = f"{bm1.__class__.__name__}.{bm1.id}"
+        self.assertEqual(len(updt_objs), len(objs) + 1)
 
-        bm2 = BaseModel()
-        bm2_key = f"{bm2.__class__.__name__}.{bm2.id}"
-
-        file_storage = FileStorage()
-        objs_dict = file_storage._FileStorage__objects
-
-        file_storage.new(bm1)
-        file_storage.save()
-
-        with open(json_file, "r") as file:
-            objs = file.read()
-
-        self.assertTrue(type(objs), str)
-        # self.assertEqual(objs, json.dumps(objs_dict))
+        storage.save()
+        storage.reload()
+        
+        rld_objs = storage.all()
+        self.assertEqual(rld_objs.keys(), updt_objs.keys())
