@@ -1,12 +1,14 @@
-/* footer style */
+/*
+   =================================================
+   2-index.html Footer Styling
+   =================================================
+*/
 footer {
-    background-color: #00FF00;
-    height: 60px;
-    width: 100%;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    bottom: 0;
+	background-color: #00FF00;
+	height: 60px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: auto;
 }
